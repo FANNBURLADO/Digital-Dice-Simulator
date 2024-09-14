@@ -1,0 +1,146 @@
+// C++ code
+//
+#define aPin 7  //        
+#define bPin 8  //      _____
+#define cPin 2  //     |  A  |
+#define dPin 3  //   F |_____| B
+#define ePin 4  //     |  G  |
+#define fPin 6  //   E |_____| C
+#define gPin 5  //        D     O dot
+
+// Pin configuration
+#define PIN_BUTTON A0
+
+const byte PIN_CHAOS = A5; // Unconnected analog pin used to initialize RNG
+
+// Other configuration
+const unsigned int BEEP_FREQUENCY = 3000;
+
+byte On=1; //<On=0; for Common anode><On=1; for Common cathode>
+byte Off;
+
+void setup() {
+  randomSeed(analogRead(PIN_CHAOS));
+
+  pinMode(aPin, OUTPUT);
+  pinMode(bPin, OUTPUT);
+  pinMode(cPin, OUTPUT);
+  pinMode(dPin, OUTPUT);
+  pinMode(ePin, OUTPUT); 
+  pinMode(fPin, OUTPUT);
+  pinMode(gPin, OUTPUT);
+  
+  pinMode(PIN_BUTTON, INPUT_PULLUP);    // On button pin as input with pullup
+ 
+  // Indicate that system is ready
+  for (int i = 6; i >=0; i--) {
+  showNumber(i);
+  delay(300); 
+  }  
+}
+
+void loop() {
+  // Wait for button to be pressed, then run the test routine
+  int buttonState = digitalRead(PIN_BUTTON);
+  if (buttonState == LOW) {
+    /*rollTheDice(10,100);          // Show the rolling animation
+    rollTheDice(5, 200);
+    rollTheDice(3, 300);*/
+    rollTheDice(1, 100);
+  }
+}
+
+void rollTheDice(byte count, byte delayLength) {
+  for (int i = 0; i < count; i++) {
+    int number = random(1,6);      // Get random number from 1 to 6
+    showNumber(number);           // Show the number
+    delay(delayLength);           // Wait
+  }
+}
+
+
+void showNumber(byte x){
+
+if(On==1){Off=0;}
+      else{Off=1;}
+ 
+   switch(x){
+     case 1: one();   break;
+     case 2: two();   break;
+     case 3: three(); break;
+     case 4: four();  break;
+     case 5: five();  break;
+     case 6: six();   break;
+     default: zero(); break;
+   }
+}
+
+void one(){
+  digitalWrite( aPin, On); //      
+  digitalWrite( bPin, Off);  //      |
+  digitalWrite( cPin, Off);  //      |
+  digitalWrite( dPin, On);   //      |
+  digitalWrite( ePin, On);   //      |
+  digitalWrite( fPin, On);
+  digitalWrite( gPin, On);
+}
+
+void two(){
+  digitalWrite( aPin, Off);  //  ____
+  digitalWrite( bPin, Off);  //      | 
+  digitalWrite( cPin, On);   //  ____|
+  digitalWrite( dPin, Off);  // |     
+  digitalWrite( ePin, Off);  // |____
+  digitalWrite( fPin, On);
+  digitalWrite( gPin, Off);
+}
+
+void three(){
+  digitalWrite( aPin, Off);  //  ____
+  digitalWrite( bPin, Off);  //      |
+  digitalWrite( cPin, Off);  //  ____|
+  digitalWrite( dPin, Off);  //      |
+  digitalWrite( ePin, On);   //  ____|
+  digitalWrite( fPin, On); 
+  digitalWrite( gPin, Off);
+}
+
+void four(){
+  digitalWrite( aPin, On);   
+  digitalWrite( bPin, Off);  // |    |
+  digitalWrite( cPin, Off);  // |____|
+  digitalWrite( dPin, On);   //      |
+  digitalWrite( ePin, On);   //      |
+  digitalWrite( fPin, Off);
+  digitalWrite( gPin, Off);
+}
+
+void five(){
+  digitalWrite( aPin, Off);  //  ____
+  digitalWrite( bPin, On);   // |
+  digitalWrite( cPin, Off);  // |____
+  digitalWrite( dPin, Off);  //      |
+  digitalWrite( ePin, On);   //  ____|
+  digitalWrite( fPin, Off);  
+  digitalWrite( gPin, Off);
+}
+
+void six(){
+  digitalWrite( aPin, Off);  //  ____
+  digitalWrite( bPin, On);   // |
+  digitalWrite( cPin, Off);  // |____
+  digitalWrite( dPin, Off);  // |    |
+  digitalWrite( ePin, Off);  // |____|
+  digitalWrite( fPin, Off);
+  digitalWrite( gPin, Off);
+}
+
+void zero(){                 
+  digitalWrite( aPin, Off); //  ____
+  digitalWrite( bPin, Off); // |    |
+  digitalWrite( cPin, Off); // |    |
+  digitalWrite( dPin, Off); // |    |
+  digitalWrite( ePin, Off); // |____|
+  digitalWrite( fPin, Off); 
+  digitalWrite( gPin, On);   
+}
