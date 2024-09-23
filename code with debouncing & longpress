@@ -1,0 +1,236 @@
+// Pin definitions for the 7-segment display
+#define aPin 7  //        
+#define bPin 8  //      _____
+#define cPin 2  //     |  A  |
+#define dPin 3  //   F |_____| B
+#define ePin 4  //     |  G  |
+#define fPin 6  //   E |_____| C
+#define gPin 5  //        D     O dot
+
+
+// Pin configuration for button
+#define PIN_BUTTON A0
+
+
+const byte PIN_CHAOS = A5; // Unconnected analog pin used to initialize RNG
+
+
+// Other configuration
+const unsigned long debounceDelay = 50;  // Debounce time in milliseconds
+const unsigned long longPressTime = 2000;  // Long press time in milliseconds
+
+
+byte On = 1; //<On=0; for Common anode><On=1; for Common cathode>
+byte Off;
+
+
+unsigned long lastDebounceTime = 0;
+unsigned long buttonPressTime = 0;
+bool buttonPressed = false;
+bool buttonHeld = false;
+
+
+void setup() {
+  randomSeed(analogRead(PIN_CHAOS));
+
+
+  pinMode(aPin, OUTPUT);
+  pinMode(bPin, OUTPUT);
+  pinMode(cPin, OUTPUT);
+  pinMode(dPin, OUTPUT);
+  pinMode(ePin, OUTPUT);
+  pinMode(fPin, OUTPUT);
+  pinMode(gPin, OUTPUT);
+
+
+  pinMode(PIN_BUTTON, INPUT_PULLUP);    // Set button pin as input with pullup
+
+
+  // Indicate that system is ready by counting down from 9 to 0
+  //for (int i = 9; i >= 0; i--) {
+    showNumber(0);
+    //delay(300);
+  //}
+}
+
+
+void loop() {
+  // Handle button press with debounce
+  int reading = digitalRead(PIN_BUTTON);
+  unsigned long currentTime = millis();  // Get the current time
+
+
+  // Debouncing logic
+  if (reading == LOW && !buttonPressed) {
+    lastDebounceTime = currentTime;
+    buttonPressed = true;
+    buttonPressTime = currentTime;  // Record the time the button was pressed
+  }
+
+
+  // If the button is released
+  if (reading == HIGH && buttonPressed) {
+    if (!buttonHeld) {
+      showRandomNumber();  // Show random number if button was pressed and released quickly
+    }
+    buttonPressed = false;
+    buttonHeld = false;
+  }
+
+
+  // Check if it's a long press (held for more than 2 seconds)
+  if (buttonPressed && !buttonHeld && currentTime - buttonPressTime >= longPressTime) {
+    buttonHeld = true;  // Mark as a long press
+    countdown();  // Start counting down from 9 to 0
+  }
+}
+
+
+void showRandomNumber() {
+  int randomNum = random(1, 6);  // Generate a random number from 0 to 9
+  showNumber(randomNum);
+}
+
+
+void countdown() {
+  for (int i = 9; i >= 0; i--) {
+    showNumber(i);
+    delay(500);  // Delay for 500 milliseconds between numbers
+  }
+}
+
+
+void showNumber(byte x) {
+  if (On == 1) {
+    Off = 0;
+  } else {
+    Off = 1;
+  }
+
+
+  switch (x) {
+    case 1: one();   break;
+    case 2: two();   break;
+    case 3: three(); break;
+    case 4: four();  break;
+    case 5: five();  break;
+    case 6: six();   break;
+    case 7: seven(); break;
+    case 8: eight(); break;
+    case 9: nine();  break;
+    case 0: zero();  break;
+    default: zero(); break;
+  }
+}
+
+
+void one() {
+  digitalWrite(aPin, Off); //      
+  digitalWrite(bPin, On);  //      |
+  digitalWrite(cPin, On);  //      |
+  digitalWrite(dPin, Off); //      |
+  digitalWrite(ePin, Off); //      |
+  digitalWrite(fPin, Off);
+  digitalWrite(gPin, Off);
+}
+
+
+void two() {
+  digitalWrite(aPin, On);    //  ____
+  digitalWrite(bPin, On);    //      |
+  digitalWrite(cPin, Off);   //  ____|
+  digitalWrite(dPin, On);    // |    
+  digitalWrite(ePin, On);    // |____
+  digitalWrite(fPin, Off);
+  digitalWrite(gPin, On);
+}
+
+
+void three() {
+  digitalWrite(aPin, On);    //  ____
+  digitalWrite(bPin, On);    //      |
+  digitalWrite(cPin, On);    //  ____|
+  digitalWrite(dPin, On);    //      |
+  digitalWrite(ePin, Off);   //  ____|
+  digitalWrite(fPin, Off);
+  digitalWrite(gPin, On);
+}
+
+
+void four() {
+  digitalWrite(aPin, Off);  
+  digitalWrite(bPin, On);    // |    |
+  digitalWrite(cPin, On);    // |____|
+  digitalWrite(dPin, Off);   //      |
+  digitalWrite(ePin, Off);   //      |
+  digitalWrite(fPin, On);
+  digitalWrite(gPin, On);
+}
+
+
+void five() {
+  digitalWrite(aPin, On);  //  ____
+  digitalWrite(bPin, Off); // |
+  digitalWrite(cPin, On);  // |____
+  digitalWrite(dPin, On);  //      |
+  digitalWrite(ePin, Off); //  ____|
+  digitalWrite(fPin, On);  
+  digitalWrite(gPin, On);
+}
+
+
+void six() {
+  digitalWrite(aPin, On);  //  ____
+  digitalWrite(bPin, Off); // |
+  digitalWrite(cPin, On);  // |____
+  digitalWrite(dPin, On);  // |    |
+  digitalWrite(ePin, On);  // |____|
+  digitalWrite(fPin, On);
+  digitalWrite(gPin, On);
+}
+
+
+void seven(){
+  digitalWrite(aPin, On);  //  ____
+  digitalWrite(bPin, On);  //      |
+  digitalWrite(cPin, On);  //      |
+  digitalWrite(dPin, Off); //      |
+  digitalWrite(ePin, Off); //      |
+  digitalWrite(fPin, Off);
+  digitalWrite(gPin, Off);
+}
+
+
+void eight(){
+  digitalWrite(aPin, On); //  ____
+  digitalWrite(bPin, On); // |    |
+  digitalWrite(cPin, On); // |____|
+  digitalWrite(dPin, On); // |    |
+  digitalWrite(ePin, On); // |____|
+  digitalWrite(fPin, On);
+  digitalWrite(gPin, On);
+}
+
+
+void nine(){
+  digitalWrite(aPin, On);  //  ____
+  digitalWrite(bPin, On);  // |    |
+  digitalWrite(cPin, On);  // |____|
+  digitalWrite(dPin, On);  //      |
+  digitalWrite(ePin, Off); //  ____|
+  digitalWrite(fPin, On);
+  digitalWrite(gPin, On);
+}
+
+
+
+
+void zero() {                
+  digitalWrite(aPin, On); //  ____
+  digitalWrite(bPin, On); // |    |
+  digitalWrite(cPin, On); // |    |
+  digitalWrite(dPin, On); // |    |
+  digitalWrite(ePin, On); // |____|
+  digitalWrite(fPin, On);
+  digitalWrite(gPin, Off);  
+}
